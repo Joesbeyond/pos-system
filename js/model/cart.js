@@ -25,31 +25,32 @@ Cart.getCartItem = function(input) {
 
 Cart.prototype.getCartItemsText = function() {
     var cartItemsText = '';
-
     _.forEach(this.cartItems, function(cartItem) {
         cartItemsText += cartItem.toInventoryText();
     });
-
     return cartItemsText;
 };
 
-Cart.prototype.getPromotionText = function(cartItems) {
-    var promotionText = '';
-    var promotion = new Promotion();
+Cart.prototype.getPromotionText = function(strategy) {
+    return strategy.getPromotionInfo(this.cartItems);
+};
+
+Cart.prototype.getPaidMoney = function(strategy) {
+    return (this.getAllSubtotal() - this.getSavedMoney());
+};
+
+Cart.prototype.getSavedMoney = function(strategy) {
+    return strategy.savedMoney;
+};
+
+Cart.prototype.getAllSubtotal = function() {
+    var totalMoney = 0;
     _.forEach(this.cartItems, function(cartItem) {
-        //promotionText += cartItem.toInventoryText();
-        promotionText += promotion.getPromotionString(cartItem);
+        var count = cartItem.count;
+        var price = cartItem.item.getPrice();
+        totalMoney += count * price;
     });
-
-    return promotionText;
+    return totalMoney;
 };
 
-
-
-Cart.prototype.getPaid = function(promotion) {
-
-
-        return this.getTotalPrices() - promotion.getPromotionTotalPrice();
-
-};
 module.exports = Cart;
